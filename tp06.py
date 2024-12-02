@@ -12,21 +12,24 @@ def loadImage(inputPath):
     result = []
     i = 0
     for item in os.listdir(folder_path):
-        #
+        # !!! changed 
+        output_folder =  f"/Users/zhiyuanguo/Desktop/Coding/CMU/Zy/processed/"
+        output_path = output_folder+item[:-4] +".png"
+        if os.path.exists(output_path):
+            continue
         img_path = os.path.join(folder_path, item)
         input_image = Image.open(img_path)
         #print("name: ", img_path)
         print("loadimage item: ", item)
         output_image = remove(input_image)
         #output_folder = f"C:\\Users\\irisy\\Desktop\\15-112\\termProject\\Term-Project\\removedbgClothing\\{i}"
-        output_folder =  f"C:\\Users\\irisy\\Desktop\\15-112\\termProject\\term-project-v2\\remobedtest\\{i}"
+        
         ##print('heloooooooooo', item)
-        output_path = output_folder+item[:-4] +".png"
+        
         output_image.save(output_path)
         result.append(output_path)
         print("result: ", result)
         i += 1
-      
     return result
 
 

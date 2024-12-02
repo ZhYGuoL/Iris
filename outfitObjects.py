@@ -1,16 +1,38 @@
 class Item:
-    instances = []
-    def __init__(self, image, name, pos, size, serialNum):
+    instances = {
+        'top': set(),
+        'bottom': set(),
+        None: set()
+    }
+    def __init__(self, image, name, pos, size, color, season, type, isTop, serialNum):
         self.image = image
         self.name = name
         self.pos = pos
         self.size = size
+        self.color = color
+        self.season = season
+        self.type = type
+        self.isTop = isTop
         self.bounds = None
         self.serialNum = serialNum
-        Item.instances.append(self)
+        if self.isTop== 'top':
+            Item.instances['top'].add(self)
+        elif self.isTop == 'bottom':
+            Item.instances['bottom'].add(self)
+        else: # None
+            Item.instances[None].add(self)
+
+    def __eq__(self, other):
+        return (self.name == other.name and self.color == other.color and self.season == other.season and self.type == other.type and self.isTop == other.isTop and self.serialNum == other.serialNum)
+
+    def display(self):
+        print(f"Item name: {self.name}, color= {self.color}, season={self.season}, type={self.type}.")
 
     def update_bounds(self, x, y, width, height):
         self.bounds = (x, y, x + width, y + height)
+
+    def __hash__(self):
+        return hash((self.name, self.type, self.isTop, self.serialNum))
 
 class Top(Item):
     def __init__(self, name, color, season, type, serialNum = 0):

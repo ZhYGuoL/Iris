@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw,ImageFont
 from outfitObjects import Top, Bottom, Item
 
 def onAppStart(app):
-   # app.url = "C:\\Users\\irisy\\Downloads\\cropflower.png"
+   # app.url = "\Users\\irisy\\Downloads\\cropflower.png"
     app.b1 = "C:/Users/irisy/Desktop/15-112/termProject/term-project-v2/item.png"
     app.b2 = "C:\\Users\\irisy\\Desktop\\15-112\\termProject\\term-project-v2\\outfit.png"
     app.b3 = "C:\\Users\\irisy\\Desktop\\15-112\\termProject\\term-project-v2\\closet.png"
@@ -36,19 +36,19 @@ def onAppStart(app):
     app.items = []
     app.noFiles = True
     app.buttonCol = rgb(109, 119, 99)
-    app.url = "C:\\Users\\irisy\\Downloads\\57E9D6B0-AF0F-4258-BE81-FF09865C1789.png"
-    pilImage1 = Image.open(app.url)
-    app.cmuImage1 = CMUImage(pilImage1)
+    # app.url = "C:\\Users\\irisy\\Downloads\\57E9D6B0-AF0F-4258-BE81-FF09865C1789.png"
+    # pilImage1 = Image.open(app.url)
+    # app.cmuImage1 = CMUImage(pilImage1)
 
     app.word = "Enter here:"
     app.type = False
-    app.season = set()
+    # app.season = set()
     app.moveOn = False
-    app.colors = set()
+    # app.curr.color = set()
     app.done = False
     app.finDone = False
     app.typeC = ""
-    app.fit = ""
+    # app.fit = ""
     app.tops = []
     app.bottoms = []
     app.seen = []
@@ -71,7 +71,7 @@ def start_redrawAll(app):
     drawLine(0, 600, 900, 600, fill = "white",lineWidth = 4)
     drawLine(50, 0, 50, 650, fill = "white", lineWidth = 4)
     drawLine(850, 0, 850, 650, fill = "white", lineWidth = 4)
-    drawImage(app.url, 620,300, align = "center", width = 400, height = 400)
+    # drawImage(app.url, 620,300, align = "center", width = 400, height = 400)
     drawStar(480, 180, 20, 4, fill = "white", roundness = 50)
     drawStar(730, 410, 20, 4, fill = "white", roundness = 50)
     #draw.text((280,300),"Welcome to", fill = "white", font = font)
@@ -94,15 +94,15 @@ def main_redrawAll(app):
     drawLine(850, 0, 850, 650, fill = "white", lineWidth = 4)
     drawLabel("Select One: ", 300, 200, size = 50, fill = "white", font = "Lora", align = "center" )
     #add item
-    drawImage(app.b1, 200, 400, align = "center", width = 250, height = 250)
+    # !!! drawImage(app.b1, 200, 400, align = "center", width = 250, height = 250) 
     drawLabel("Add an item", 170, 540, align = "center", fill = "white", size = 25, font = "Lora")
     drawLine(90, 555, 250, 555, fill = "white")
     #create outfit
-    drawImage(app.b2, 460, 400, align = "center", width = 250, height = 250)
+    # !!! drawImage(app.b2, 460, 400, align = "center", width = 250, height = 250)
     drawLabel("Create an Outfit", 450, 540, align = "center", fill = "white", size = 25, font = "Lora")
     drawLine(350, 555, 550, 555, fill = "white")
     #wardrobe
-    drawImage(app.b3, 720, 400, align = "center", width = 250, height = 250)
+    # !!! drawImage(app.b3, 720, 400, align = "center", width = 250, height = 250)
     drawLabel("Wardrobe", 700, 540, align = "center", fill = "white", size = 25, font = "Lora")
     drawLine(640, 555, 760, 555, fill = "white")
 
@@ -148,17 +148,21 @@ def item_onMousePress(app, mouseX, mouseY):
         i = 0
         while app.files == None:
             file_path = app.getTextInput("Enter the path of the file to read: ")
+            print(os.path)
             if file_path and os.path.exists(file_path):
                 app.files = file_path
+                print(app.files)
             else:
                 app.showMessage("Invalid path! Please enter a valid directory.")
                 app.files == None
         try:
-            for item in loadImage(app.files):
+            # !!! change path
+            loadImage(app.files)
+            for item in ['/Users/zhiyuanguo/Desktop/Coding/CMU/Zy/processed/'+item for item in os.listdir('processed')]:
                 filename = os.path.splitext(os.path.basename(item))[0]
                 print("namsssss: ", filename)
-                Item(item, filename, (0, 0), (200, 200), (0))
-                i += 1
+                Item(item, filename, (0, 0), (200, 200), set(), set(), '', None, None)
+                # i += 1
             # Item.instances[0]
             app.noFiles = False
             setActiveScreen("main")
@@ -193,7 +197,7 @@ def wardrobe_redrawAll(app):
         if app.files == None:
             pass
         else:
-            for i, item in enumerate(Item.instances):
+            for i, item in enumerate([item for sublist in Item.instances.values() for item in sublist]):
                 # print("item name: ", item)
                 row = i // app.numCols
                 col = i % app.numCols
@@ -262,20 +266,25 @@ def wardrobe_onMousePress(app, mouseX, mouseY):
         setActiveScreen("outfit") #testing
     else:
         # Iterate through each item to check if the click is within its bounds
-        for item in Item.instances:
+        for item in [item for sublist in Item.instances.values() for item in sublist]:
             if item.bounds is not None:  # Check if bounds are set
                 x1, y1, x2, y2 = item.bounds  # Get the bounds of the item
                 if x1 <= mouseX <= x2 and y1 <= mouseY <= y2:  # Check if mouse is inside the bounds
-                    app.selectedItem = item  # Update the selected item
-                    app.num = item.name
+                    app.curr = item
+                    # app.num = item.name
                     print("item name: ", item.name)
-                    if item.name not in app.seen:
-                        app.seen.append(item.name)
-                        setActiveScreen("nameItem")
+                    if app.curr.name not in app.seen:
+                        app.rename = False
+                        app.typeC = ''
+                        app.word = "Enter here:"
+                        app.seen.append(app.curr.name)
+                        setActiveScreen("nameItem") 
+                        break
                     else:
+                        print('founedoineif na')
                         app.rename = True
-                        app.curr = item
                         setActiveScreen("temp")
+                        break
                         # print(app.selectedItem)
                         # if app.tops != []:
                         #     print("tops:", app.tops)
@@ -286,7 +295,7 @@ def wardrobe_onMousePress(app, mouseX, mouseY):
                         #             app.curr = i
                         #             app.season = app.curr.season
                         #             app.color = app.curr.color
-                        #             app.fit = app.curr.type
+                        #             app.curr.type = app.curr.type
                         #             setActiveScreen("temp")
                         # if app.bottoms != []:
                         #     print("bottoms:", app.bottoms)
@@ -297,7 +306,7 @@ def wardrobe_onMousePress(app, mouseX, mouseY):
                         #             app.curr = i
                         #             app.season = app.curr.season
                         #             app.color = app.curr.color
-                        #             app.fit = app.curr.type
+                        #             app.curr.type = app.curr.type
                         #             setActiveScreen("temp")
                         print("already seen")
                     print("seen: ", app.seen)
@@ -333,8 +342,8 @@ def temp_redrawAll(app):
     print("app.curr: ", app.curr)
 
     drawLabel(f"Name: {app.curr.name}", 230, 200, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
-    drawLabel(f"Color: {app.curr.getColor()}", 230, 250, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
-    drawLabel(f"Season: {app.curr.getSeason()}", 230, 300, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
+    drawLabel(f"Color: {app.curr.color}", 230, 250, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
+    drawLabel(f"Season: {app.curr.season}", 230, 300, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
     drawLabel(f"Style: {app.curr.type}", 230, 350, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
     # if isinstance(app.curr, Top):
     #     drawLabel(f"Type: {app.curr.isTop}", 230, 400, size = 20, fill = "white", font = "Lora", align = "left",bold = True)
@@ -391,7 +400,6 @@ def temp_onMousePress(app, mouseX, mouseY):
     #             setActiveScreen("nameItem")
     #             #print(f"Clicked on {item.name}")
     #             #setActiveScreen("itemDetails")  # Example action
-
  
 def nameItem_redrawAll(app):
     buttonCol = rgb(109, 119, 99)
@@ -419,8 +427,9 @@ def nameItem_onMousePress(app, mouseX, mouseY):
         app.word = ""
     if (mouseX >= 328 and mouseX <= 530) and (mouseY >= 350 and mouseY <= 400):
         if app.word != "Enter here:":
+            app.curr.name = app.word
+            app.seen[-1] = app.curr.name
             if app.rename:
-                app.curr.changeName(app.word)
                 setActiveScreen("temp")
             else:
                 setActiveScreen("season")
@@ -429,8 +438,8 @@ def nameItem_onMousePress(app, mouseX, mouseY):
             print("new: ", app.word)
             setActiveScreen("temp")
         else:
-            if (app.tops == [] and app.bottoms == []):
-                app.seen.remove(app.num)
+            # if (app.tops == [] and app.bottoms == []):
+            #     app.seen.remove(app.num)
             setActiveScreen("wardrobe")
         
 def nameItem_onKeyPress(app, key):
@@ -453,7 +462,7 @@ def season_redrawAll(app):
     drawLabel("(can select multiple)", 430, 220-30, size = 25, fill = "white", font = "Lora", bold=True)
     #drawButton(240, 250, 400, 50, 10, fill = buttonCol)
     drawButton(210 + 50, 337 - 40, 150, 65 - 10, 10, fill="white")
-    if "Spring" in app.season:
+    if "Spring" in app.curr.season:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -461,7 +470,7 @@ def season_redrawAll(app):
     drawLabel("Spring", 210 + 50 + 75, 337 - 40 + 27, fill="white", font="Lora", size=20)  # Adjusted label position
 
     # Summer Button
-    if "Summer" in app.season:
+    if "Summer" in app.curr.season:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -469,7 +478,7 @@ def season_redrawAll(app):
     drawButton(212 + 50, 340 - 110, 147, 60 - 10, 10, fill=buttonCol)
     drawLabel("Summer", 210 + 50 + 75, 337 - 110 + 27, fill="white", font="Lora", size=20)  # Adjusted label position
 
-    if "Autumn" in app.season:
+    if "Autumn" in app.curr.season:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -477,7 +486,7 @@ def season_redrawAll(app):
     drawButton(212 + 250, 340 - 40, 147, 60 - 10, 10, fill=buttonCol)
     drawLabel("Autumn", 210 + 250 + 75, 337 - 40 + 27, fill="white", font="Lora", size=20)  # Adjusted label position
 
-    if "Winter" in app.season:
+    if "Winter" in app.curr.season:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -495,33 +504,31 @@ def season_redrawAll(app):
     
 def season_onMousePress(app, mouseX, mouseY):
     if (mouseX >= 260 and mouseX <= 410) and (mouseY >= 230 and mouseY <= 280):
-        if "Summer" in app.season:
-            app.season.remove("Summer")
+        if "Summer" in app.curr.season:
+            app.curr.season.remove("Summer")
         else:
-            app.season.add("Summer")
+            app.curr.season.add("Summer")
     if (mouseX >= 260 and mouseX <= 410) and (mouseY >= 300 and mouseY <= 350):
-        if "Spring" in app.season:
-            app.season.remove("Spring")
+        if "Spring" in app.curr.season:
+            app.curr.season.remove("Spring")
         else:
-            app.season.add("Spring")
+            app.curr.season.add("Spring")
     if (mouseX >= 460 and mouseX <= 610) and (mouseY >= 230 and mouseY <= 280):
-        if "Winter" in app.season:
-            app.season.remove("Winter")
+        if "Winter" in app.curr.season:
+            app.curr.season.remove("Winter")
         else:
-            app.season.add("Winter")
+            app.curr.season.add("Winter")
     if (mouseX >= 460 and mouseX <= 610) and (mouseY >= 300 and mouseY <= 350):
-        if "Autumn" in app.season:
-            app.season.remove("Autumn")
+        if "Autumn" in app.curr.season:
+            app.curr.season.remove("Autumn")
         else:
-            app.season.add("Autumn")
-    if app.season != set(): app.moveOn = True
+            app.curr.season.add("Autumn")
+    if app.curr.season != set(): app.moveOn = True
     if (mouseX >= 328 and mouseX <= 530) and (mouseY >= 370 and mouseY <= 420):
         if app.moveOn:
             if app.rename:
-                app.curr.changeSeason(app.season)
                 setActiveScreen("temp")
             else:
-                print(app.season)
                 setActiveScreen("colors")
     if (mouseX >= 50 and mouseX <= 110) and (mouseY >= 60 and mouseY <= 110):
         if app.rename:
@@ -554,7 +561,7 @@ def colors_redrawAll(app):
     selectedCol = rgb(109, 119, 99)
     j = 0
     for i in range(200, 680, 70):
-        # if colors[j] in app.colors:
+        # if colors[j] in app.curr.color:
         #     drawButton(18 + i, 247, 45, 45, 10, fill = selectedCol)
         #     drawButton(20 + i, 250, 40, 40, 10, fill = colors[j])
         # else:
@@ -562,7 +569,7 @@ def colors_redrawAll(app):
         j += 1
     j = 0
     for i in range(200, 680, 70):
-        # if col[j] in app.colors:
+        # if col[j] in app.curr.color:
         #     #drawButton(18 + i, 297, 45, 45, 10, fill = selectedCol)
         #     drawButton(20 + i, 300, 40, 40, 10, fill = col[j])
         # else:
@@ -578,87 +585,86 @@ def colors_redrawAll(app):
 def colors_onMousePress(app, mouseX, mouseY):
     if (mouseY >= 250 and mouseY <= 290):
         if (mouseX >= 220 and mouseX <= 260):
-            if "black" in app.colors:
-                app.colors.remove("black")
+            if "black" in app.curr.color:
+                app.curr.color.remove("black")
             else:
-                app.colors.add("black")
+                app.curr.color.add("black")
         if (mouseX >= 290 and mouseX <= 330):
-            if "brown" in app.colors:
-                app.colors.remove("brown")
+            if "brown" in app.curr.color:
+                app.curr.color.remove("brown")
             else:
-                app.colors.add("brown")
+                app.curr.color.add("brown")
         if (mouseX >= 360 and mouseX <= 400):
-            if "blue" in app.colors:
-                app.colors.remove("blue")
+            if "blue" in app.curr.color:
+                app.curr.color.remove("blue")
             else:
-                app.colors.add("blue")
+                app.curr.color.add("blue")
         if (mouseX >= 430 and mouseX <= 470):
-            if "lightBlue" in app.colors:
-                app.colors.remove("lightBlue")
+            if "lightBlue" in app.curr.color:
+                app.curr.color.remove("lightBlue")
             else:
-                app.colors.add("lightBlue")
+                app.curr.color.add("lightBlue")
         if (mouseX >= 500 and mouseX <= 540):
-            if "purple" in app.colors:
-                app.colors.remove("purple")
+            if "purple" in app.curr.color:
+                app.curr.color.remove("purple")
             else:
-                app.colors.add("purple")
+                app.curr.color.add("purple")
         if (mouseX >= 570 and mouseX <= 610):
-            if "pink" in app.colors:
-                app.colors.remove("pink")
+            if "pink" in app.curr.color:
+                app.curr.color.remove("pink")
             else:
-                app.colors.add("pink")
+                app.curr.color.add("pink")
         if (mouseX >= 640 and mouseX <= 680):
-            if "orange" in app.colors:
-                app.colors.remove("orange")
+            if "orange" in app.curr.color:
+                app.curr.color.remove("orange")
             else:
-                app.colors.add("orange")
+                app.curr.color.add("orange")
 
     if (mouseY >= 300 and mouseY <= 340):
         if (mouseX >= 220 and mouseX <= 260):
-            if "green" in app.colors:
-                app.colors.remove("green")
+            if "green" in app.curr.color:
+                app.curr.color.remove("green")
             else:
-                app.colors.add("green")
+                app.curr.color.add("green")
         if (mouseX >= 290 and mouseX <= 330):
-            if "yellow" in app.colors:
-                app.colors.remove("yellow")
+            if "yellow" in app.curr.color:
+                app.curr.color.remove("yellow")
             else:
-                app.colors.add("yellow")
+                app.curr.color.add("yellow")
         if (mouseX >= 360 and mouseX <= 400):
-            if "red" in app.colors:
-                app.colors.remove("red")
+            if "red" in app.curr.color:
+                app.curr.color.remove("red")
             else:
-                app.colors.add("red")
+                app.curr.color.add("red")
         if (mouseX >= 430 and mouseX <= 470):
-            if "gray" in app.colors:
-                app.colors.remove("gray")
+            if "gray" in app.curr.color:
+                app.curr.color.remove("gray")
             else:
-                app.colors.add("gray")
+                app.curr.color.add("gray")
         if (mouseX >= 500 and mouseX <= 540):
-            if "beige" in app.colors:
-                app.colors.remove("beige")
+            if "beige" in app.curr.color:
+                app.curr.color.remove("beige")
             else:
-                app.colors.add("beige")
+                app.curr.color.add("beige")
         if (mouseX >= 570 and mouseX <= 610):
-            if "white" in app.colors:
-                app.colors.remove("white")
+            if "white" in app.curr.color:
+                app.curr.color.remove("white")
             else:
-                app.colors.add("white")
+                app.curr.color.add("white")
         if (mouseX >= 640 and mouseX <= 680):
-            if "lightGray" in app.colors:
-                app.colors.remove("lightGray")
+            if "lightGray" in app.curr.color:
+                app.curr.color.remove("lightGray")
             else:
-                app.colors.add("lightGray")
-    print(app.colors)
-    if app.colors != set():
+                app.curr.color.add("lightGray")
+    print(app.curr.color)
+    if app.curr.color != set():
         app.done = True
     if (mouseX >= 328 and mouseX <= 530) and (mouseY >= 370 and mouseY <= 420):
         if app.done:
             if app.rename:
-                app.curr.changeColor(app.colors)
                 setActiveScreen("temp")
             else:
-                print(app.colors)
+                print(app.curr.color)
                 setActiveScreen("type")
     elif (mouseX >= 50 and mouseX <= 110) and (mouseY >= 60 and mouseY <= 110):
         if app.rename:
@@ -677,7 +683,7 @@ def type_redrawAll(app):
     drawButton(205, 105, 390 + 100, 290 + 50, 20, fill = app.bgCol)
     drawLabel("Is your item a top or bottom?", 430, 180-30, size = 30, fill = "white", font= "Lora", bold = True)
     
-    if "Top" in app.typeC:
+    if "top" in app.typeC:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -685,7 +691,7 @@ def type_redrawAll(app):
     drawButton(212 + 50, 253, 147, 60 - 10, 10, fill=buttonCol)
     drawLabel("Top", 210 + 50 + 75, 250 + 27, fill="white", font="Lora", size=20)  # Adjusted label position
 
-    if "Bottom" in app.typeC:
+    if "bottom" in app.typeC:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -702,22 +708,24 @@ def type_redrawAll(app):
 
 def type_onMousePress(app, mouseX, mouseY):
     if (mouseX >= 260 and mouseX <= 410) and (mouseY >= 250 and mouseY <= 300):
-        app.typeC = ("Top")
+        app.typeC = ("top")
         app.finDone = True
     if (mouseX >= 460 and mouseX <= 610) and (mouseY >= 250 and mouseY <= 300):
-        app.typeC = ("Bottom")
+        app.typeC = ("bottom")
         app.finDone = True
     if (mouseX >= 328 and mouseX <= 530) and (mouseY >= 370 and mouseY <= 420):
         if app.finDone:
             print(app.typeC)
             print("done")
-            # if app.rename:
-            #     # app.curr.changeType = app.typeC
-            #     setActiveScreen("temp")
-            # else:
-            setActiveScreen("fit")
+            Item.instances[app.curr.isTop].remove(app.curr)
+            Item.instances[app.typeC].add(app.curr)
+            app.curr.isTop = app.typeC
+            if app.rename:
+                setActiveScreen("temp")
+            else:
+                setActiveScreen("fit")
             # if app.typeC == "Top":
-            #     tops.append(Top(app.word, app.colors, app.season))
+            #     tops.append(Top(app.word, app.curr.color, app.season))
 
     if (mouseX >= 50 and mouseX <= 110) and (mouseY >= 60 and mouseY <= 110):
         if app.rename:
@@ -736,7 +744,7 @@ def fit_redrawAll(app):
     drawButton(205, 105, 390 + 100, 290 + 50, 20, fill = app.bgCol)
     drawLabel("Select the fit", 430, 180-30, size = 30, fill = "white", font= "Lora", bold = True)
     
-    if "baggy" in app.fit:
+    if "baggy" in app.curr.type:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -744,7 +752,7 @@ def fit_redrawAll(app):
     drawButton(212 + 50, 253-50, 147, 60 - 10, 10, fill=buttonCol)
     drawLabel("Baggy", 210 + 50 + 75, 250 + 27-50, fill="white", font="Lora", size=20)  # Adjusted label position
 
-    if "tight" in app.fit:
+    if "tight" in app.curr.type:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -752,7 +760,7 @@ def fit_redrawAll(app):
     drawButton(212 + 250, 253-50, 147, 60 - 10, 10, fill=buttonCol)
     drawLabel("Tight", 210 + 250 + 75, 250 + 27-50, fill="white", font="Lora", size=20)  # Adjusted label position
     
-    if "well-fit" in app.fit:
+    if "well-fit" in app.curr.type:
         buttonCol = rgb(173,173,173)
     else:
         buttonCol = rgb(109, 119, 99)
@@ -770,56 +778,55 @@ def fit_redrawAll(app):
     
 def fit_onMousePress(app, mouseX, mouseY):
     if (mouseX >= 260 and mouseX <= 410) and (mouseY >= 200 and mouseY <= 255):
-        app.fit = "baggy"
+        app.curr.type = "baggy"
     if (mouseX >= 460 and mouseX <= 610) and (mouseY >= 200 and mouseY <= 255):
-        app.fit = "tight"
+        app.curr.type = "tight"
     if (mouseX >= 360 and mouseX <= 510) and (mouseY >= 270 and mouseY <= 325):
-        app.fit = "well-fit"
+        app.curr.type = "well-fit"
     if (mouseX >= 50 and mouseX <= 110) and (mouseY >= 50 and mouseY <= 100):
         if app.rename:
             setActiveScreen("temp")
         else:
             setActiveScreen("type")
-    print(app.fit)
-    if app.fit != "":
+    print(app.curr.type)
+    if app.curr.type != "":
         if (mouseX >= 328 and mouseX <= 530) and (mouseY >= 370 and mouseY <= 420):
-
             if app.rename:
-                app.curr.changeType(app.fit)
                 setActiveScreen("temp")
             else:
+                app.rename = True
                 setActiveScreen("wardrobe")
             
-                if app.typeC == "Top":
-                    app.tops.append(Top(app.word, app.colors, app.season, app.fit, app.num))
+            #     if app.typeC == "Top":
 
-                elif app.typeC == "Bottom":
-                    app.bottoms.append(Bottom(app.word, app.colors, app.season, app.fit, app.num))
-                if app.tops != [] or app.bottoms != []:
-                    app.word = ""
-                    app.colors = set()
-                    app.season = set()
-                    app.typeC = ""
-                    app.fit = ""
-                    app.num = 0
-            print(app.tops, app.bottoms)
+
+            #     elif app.typeC == "Bottom":
+            #         app.bottoms.append(Bottom(app.word, app.curr.color, app.season, app.curr.type, app.num))
+            #     if app.tops != [] or app.bottoms != []:
+            #         app.word = ""
+            #         app.curr.color = set()
+            #         app.season = set()
+            #         app.typeC = ""
+            #         app.curr.type = ""
+            #         app.num = 0
+            # print(app.tops, app.bottoms)
             
 
 
 
-
-from generator2 import  generateAllPossibleOutfits, displayOutfits
-#Outfit Screen
-def seasons(topList, bottomList, season, topsSorted, botsSorted):
-    for top in topList:
-        print("get season: ", top.getSeason())
-        if season in top.getSeason() :
-            topsSorted.append(top)
-            print("sorted list for now: ", topsSorted)
-    for bot in bottomList:
-        if season in bot.getSeason():
-            botsSorted.append(bot)
-    return topsSorted, botsSorted
+# !!! GENERATOR
+# from generator2 import  generateAllPossibleOutfits, displayOutfits
+# #Outfit Screen
+# def seasons(topList, bottomList, season, topsSorted, botsSorted):
+#     for top in topList:
+#         print("get season: ", top.getSeason())
+#         if season in top.getSeason() :
+#             topsSorted.append(top)
+#             print("sorted list for now: ", topsSorted)
+#     for bot in bottomList:
+#         if season in bot.getSeason():
+#             botsSorted.append(bot)
+#     return topsSorted, botsSorted
 
 def gen_redrawAll(app):
     types = {
@@ -871,7 +878,7 @@ def gen_redrawAll(app):
         result = []
         (generateAllPossibleOutfits(result, topsSorted, botsSorted))
         for i in app.tops:
-            print("season: ", i.getSeason())
+            print("season: ", i.season)
         print("final four: ", displayOutfits(result))
         final = displayOutfits(result)
         print("item instances: ", Item.instances)
@@ -890,7 +897,7 @@ def gen_onMousePress(app, mouseX, mouseY):
 def outfit_redrawAll(app):
     x = 250
     y = 100
-    for item in (Item.instances):
+    for item in [item for sublist in Item.instances.values() for item in sublist]:
         drawImage(item.image, x + item.size[0] / 2 + 20, y + item.size[1] / 2, align="center", width=item.size[0], height=item.size[1])
         
 
