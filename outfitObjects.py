@@ -4,6 +4,7 @@ class Item:
         'bottom': set(),
         None: set()
     }
+
     def __init__(self, image, name, pos, size, color, season, type, isTop, serialNum):
         self.image = image
         self.name = name
@@ -15,24 +16,30 @@ class Item:
         self.isTop = isTop
         self.bounds = None
         self.serialNum = serialNum
-        if self.isTop== 'top':
+        if self.isTop == 'top':
             Item.instances['top'].add(self)
         elif self.isTop == 'bottom':
             Item.instances['bottom'].add(self)
-        else: # None
+        else:  # None
             Item.instances[None].add(self)
 
     def __eq__(self, other):
-        return (self.name == other.name and self.color == other.color and self.season == other.season and self.type == other.type and self.isTop == other.isTop and self.serialNum == other.serialNum)
+        return isinstance(other, Item) and self.image == other.image and self.name == other.name and self.pos == other.pos and self.size == other.size and self.color == other.color and self.season == other.season and self.type == other.type and self.isTop == other.isTop and self.serialNum == other.serialNum
+
+    def __hash__(self):
+        return hash(self.serialNum)  # or hash(tuple of other identifying attributes)
 
     def display(self):
         print(f"Item name: {self.name}, color= {self.color}, season={self.season}, type={self.type}.")
 
     def update_bounds(self, x, y, width, height):
         self.bounds = (x, y, x + width, y + height)
+        
+    def __repr__(self):
+        return f"Item: {self.name}, Type: {self.isTop}, Color: {self.color}, Season: {self.season}, Size: {self.size}, Position: {self.pos}, Bounds: {self.bounds}, Serial Number: {self.serialNum}"
 
-    def __hash__(self):
-        return hash((self.name, self.type, self.isTop, self.serialNum))
+
+        
 
 class Top(Item):
     def __init__(self, name, color, season, type, serialNum = 0):

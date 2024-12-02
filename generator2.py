@@ -144,11 +144,11 @@ def generateAllGoodOutfits(topList, bottomList):
     a list of good outfit objects
   """
   if not topList:
-    print('Eror, top is empty, please add tops.')
+    print('Error, top is empty, please add tops.')
     sys.exit(0)
   if not bottomList:
     print('Error, bottom is empty, please add bottoms')
-    sys.exit(0)
+    sys.exit(0) 
   good_outfits = []
   for top in topList:
     for bottom in bottomList:
@@ -214,8 +214,8 @@ def onAppStart(app):
     top2 = Item("bm",{ "blue"}, {"summer"}, "tight", "5IMG_1479")
     top3 = Item("Pacsun", {"red"}, {"summer", "spring"}, "tight", "2IMG_1473")
     top4 = Item("bm", {"white"}, {"summer", "spring"}, "tight", "1IMG_1470")
-    bot1 = Bottom("chuu", {"gray"}, {"summer", "fall"}, "baggy", "3IMG_1475")
-    bot2 = Bottom("jean", {"lightBlue"}, {"summer"}, "well-fit", "4IMG_1476")
+    bot1 = Item("chuu", {"gray"}, {"summer", "fall"}, "baggy", "3IMG_1475")
+    bot2 = Item("jean", {"lightBlue"}, {"summer"}, "well-fit", "4IMG_1476")
     # app.tops = [top1, top2, top3, top4]
     # app.bottoms = [bot1, bot2]
 
@@ -223,7 +223,7 @@ def onAppStart(app):
     # app.tops = [top1, top2, top3, top4,top5]
     print('top list = ', app.tops)
     print('bottom list = ', app.bottoms)
-    app.my_good_outfits = generateAllGoodOutfits(Item.instances['top'], app.instances['bottom'])
+    app.my_good_outfits = generateAllGoodOutfits(Item.instances['top'], Item.instances['bottom'])
 
 
     print('good outfits: ', app.my_good_outfits)
@@ -288,9 +288,9 @@ def onAppStart(app):
 def addUserPref(outfits, output):
     for clothing in outfits:
         print("abc:")
-        print(clothing.getColor())
-        output["colors"] = output.get("colors", set()) | clothing.getColor()
-        clothing.updatePref(clothing.getColor())
+        print(clothing.color)
+        output["colors"] = output.get("colors", set()) | clothing.color
+        clothing.updatePref(clothing.color)
     print(output)
     return output
     
@@ -511,3 +511,4 @@ def test_generator():
         print("----------------------------------------------------------")
         print("final outfits: ", my_good_outfits)
 test_generator()
+# app.run()

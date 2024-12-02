@@ -279,12 +279,10 @@ def wardrobe_onMousePress(app, mouseX, mouseY):
                         app.word = "Enter here:"
                         app.seen.append(app.curr.name)
                         setActiveScreen("nameItem") 
-                        break
                     else:
                         print('founedoineif na')
                         app.rename = True
                         setActiveScreen("temp")
-                        break
                         # print(app.selectedItem)
                         # if app.tops != []:
                         #     print("tops:", app.tops)
@@ -534,7 +532,7 @@ def season_onMousePress(app, mouseX, mouseY):
         if app.rename:
             setActiveScreen("temp")
         else:
-           setActiveScreen("nameItem")
+            setActiveScreen("nameItem")
 
 def colors_redrawAll(app):
     buttonCol = rgb(109, 119, 99)
@@ -717,6 +715,11 @@ def type_onMousePress(app, mouseX, mouseY):
         if app.finDone:
             print(app.typeC)
             print("done")
+            print(app.curr.isTop)
+            print(Item.instances[app.curr.isTop])
+            [print(item) for item in Item.instances[app.curr.isTop]]
+            print(app.curr)
+            print(app.curr in Item.instances[app.curr.isTop])
             Item.instances[app.curr.isTop].remove(app.curr)
             Item.instances[app.typeC].add(app.curr)
             app.curr.isTop = app.typeC
